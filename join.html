@@ -1,0 +1,67 @@
+<!doctype html>
+<!--
+  The invite link's web page (research R2). Published by Jeff next to
+  privacy-policy.html (https://jw888888.github.io/Homeos/join.html), the URL in
+  src/config/brand.json "inviteUrl". docs/handover/INVITE_LINK_RUNBOOK.md.
+  The app shares  join.html?code=ABC123&h=<household name>.
+  - "Open Home OS" opens homeos://join/ABC123?h=… (the app's "Join <household>").
+  - No app: the App Store button, and the code to type in Us › Join another household.
+  Once the associated domain is set up, iOS opens the app for this link directly
+  and this page is only seen without the app installed.
+  Static: no scripts from elsewhere, no cookies, no analytics. The name and the
+  code are only ever set as text, never as HTML.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Join a household on Home OS</title>
+  <style>
+    :root { color-scheme: light dark; --bg: #ffffff; --fg: #1c1c1e; --muted: #6b6b70; --card: #f2f2f7; --accent: #1a3c6e; --on-accent: #ffffff; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #000000; --fg: #f2f2f7; --muted: #a1a1a6; --card: #1c1c1e; --accent: #8fb3ff; --on-accent: #0b1a33; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; padding: 24px 16px; }
+    main { width: 100%; max-width: 420px; text-align: center; }
+    h1 { font-size: 30px; line-height: 1.2; margin: 0 0 12px; overflow-wrap: anywhere; }
+    p { color: var(--muted); font-size: 17px; line-height: 1.4; margin: 0 0 24px; }
+    .btn { display: block; width: 100%; min-height: 52px; padding: 15px 16px; border-radius: 16px; font-size: 17px; font-weight: 600;
+      text-decoration: none; margin-bottom: 12px; }
+    .primary { background: var(--accent); color: var(--on-accent); }
+    .secondary { background: var(--card); color: var(--fg); }
+    .code { background: var(--card); border-radius: 12px; padding: 16px; margin: 12px 0 0; }
+    .code small { display: block; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+    .code strong { font-size: 28px; letter-spacing: .2em; font-variant-numeric: tabular-nums; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">Join a household on Home OS</h1>
+    <p id="line">Shared tasks, shopping and bills for everyone at home.</p>
+    <div id="actions">
+      <a id="open" class="btn primary" href="#">Open Home OS</a>
+      <a id="store" class="btn secondary" href="https://apps.apple.com/app/home-os">Get Home OS on the App Store</a>
+      <div class="code"><small>Or enter this code in the app</small><strong id="code"></strong></div>
+    </div>
+    <p id="bad" class="hidden">This invite link isn't complete. Ask whoever invited you for a new one.</p>
+  </main>
+  <script>
+    (function () {
+      var q = new URLSearchParams(window.location.search);
+      var code = (q.get('code') || '').trim().toUpperCase();
+      var name = (q.get('h') || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
+      if (!/^[A-Z0-9]{6,8}$/.test(code)) {
+        document.getElementById('actions').className = 'hidden';
+        document.getElementById('line').className = 'hidden';
+        document.getElementById('bad').className = '';
+        return;
+      }
+      if (name) document.getElementById('title').textContent = 'Join ' + name + ' on Home OS';
+      document.getElementById('code').textContent = code;
+      document.getElementById('open').href = 'homeos://join/' + encodeURIComponent(code) + (name ? '?h=' + encodeURIComponent(name) : '');
+    })();
+  </script>
+</body>
+</html>
